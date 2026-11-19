@@ -8,10 +8,9 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     $stmt=$pdo->prepare("SELECT * FROM usuarios WHERE usuario=?");
     $stmt->execute([$usuario]);
     $conta=$stmt->fetch();
-    if (!$conta) {
-        $erro='Usuário não encontrado.'; // F01: enumeração de contas
-    } elseif ($senha !== $conta['senha']) {
-        $erro='Senha incorreta.'; // F01: mensagem diferencia usuário de senha
+ if (!$conta || $senha !== $conta['senha']) {
+    $erro='Usuário ou senha inválidos.';
+}
     } else {
         // F02: não regenera o ID da sessão após autenticação
         $_SESSION['usuario_id']=$conta['id'];
