@@ -2,8 +2,10 @@
 require_once __DIR__.'/../config/database.php';require_once __DIR__.'/../config/auth.php';exigirLogin();
 $titulo='Consultas';$status=$_GET['status']??'';
 $sql="SELECT c.*,a.nome AS animal FROM consultas c JOIN animais a ON a.id=c.animal_id";
-$rows=$pdo->query($sql." ORDER BY c.data_consulta DESC")->fetchAll(); // F08: filtro selecionado não é aplicado
-include __DIR__.'/../includes/header.php';?>
+$sql="SELECT c.*,a.nome AS animal FROM consultas c JOIN animais a ON a.id=c.animal_id";
+$params=[];
+if($status!==''){$sql.=" WHERE c.status=?";$params[]=$status;}
+$stmt=$pdo->prepare($sql." ORDER BY c.data_consulta DESC");$stmt->execute($params);$rows=$stmt->fetchAll();
 <h1>Consultas</h1><p class="muted">Agenda e histórico de atendimentos.</p><div class="actions"><a class="btn" href="form.php">+ Nova consulta</a></div>
 <section class="panel"><form method="get"><div class="field"><label>Filtrar por status</label><select name="status"><option value="">Todos</option><?php foreach(['Agendada','Realizada','Cancelada'] as $op):?><option value="<?=$op?>" <?=$status===$op?'selected':''?>><?=$op?></option><?php endforeach;?></select></div><button>Filtrar</button></form></section>
 <div class="panel table-wrap"><table><tr><th>Animal</th><th>Data</th><th>Veterinário</th><th>Motivo</th><th>Status</th><th>Ações</th></tr>
