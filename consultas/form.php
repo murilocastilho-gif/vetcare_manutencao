@@ -4,9 +4,12 @@ $id=(int)($_GET['id']??0);$r=['animal_id'=>'','data_consulta'=>'','veterinario'=
 if($id){$s=$pdo->prepare("SELECT * FROM consultas WHERE id=?");$s->execute([$id]);$r=$s->fetch()?:$r;}
 $animais=$pdo->query("SELECT id,nome FROM animais ORDER BY nome")->fetchAll();$erro='';
 if($_SERVER['REQUEST_METHOD']==='POST'){
- $data=$_POST['data_consulta']??'';$dt=str_replace('T',' ',$data).(strlen($data)===16?':00':'');
- if(trim($_POST['veterinario']??'')==='')$erro='Informe o veterinário.';
- else{
+$data=$_POST['data_consulta']??'';$dt=str_replace('T',' ',$data).(strlen($data)===16?':00':'');
+$statusPost=$_POST['status']??'Agendada';
+if(trim($_POST['veterinario']??'')==='')$erro='Informe o veterinário.';
+elseif(!$dt || strtotime($dt)===false)$erro='Informe uma data de agendamento válida.';
+elseif((!$id || $statusPost==='Agendada') && strtotime($dt)<time())$erro='Não é permitido agendar consultas com data anterior à data e hora atuais.';
+else{
   $dados=[(int)$_POST['animal_id'],$dt,$_POST['veterinario'],$_POST['motivo'],$_POST['status'],$_POST['observacoes']];
   if($id){$s=$pdo->prepare("UPDATE consultas SET animal_id=?,data_consulta=?,veterinario=?,motivo=?,status=?,observacoes=? WHERE id=?");$s->execute([...$dados,$id]);}
   else{$s=$pdo->prepare("INSERT INTO consultas(animal_id,data_consulta,veterinario,motivo,status,observacoes) VALUES(?,?,?,?,?,?)");$s->execute($dados);}
