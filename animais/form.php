@@ -5,8 +5,9 @@ if($id){$s=$pdo->prepare("SELECT * FROM animais WHERE id=?");$s->execute([$id]);
 $tutores=$pdo->query("SELECT id,nome FROM tutores ORDER BY nome")->fetchAll();$erro='';
 if($_SERVER['REQUEST_METHOD']==='POST'){
  $nome=trim($_POST['nome']??'');$especie=trim($_POST['especie']??'');
- if($nome==='')$erro='Informe o nome do animal.';
- else{
+if($nome==='')$erro='Informe o nome do animal.';
+elseif($especie==='')$erro='Informe a espécie do animal.'; 
+else{
   $dados=[(int)$_POST['tutor_id'],$nome,$especie,$_POST['raca'],$_POST['nascimento']?:null,$_POST['sexo'],$_POST['observacoes']];
   if($id){$s=$pdo->prepare("UPDATE animais SET tutor_id=?,nome=?,especie=?,raca=?,nascimento=?,sexo=?,observacoes=?,ativo=? WHERE id=?");$s->execute([...$dados,(int)($_POST['ativo']??1),$id]);}
   else{$s=$pdo->prepare("INSERT INTO animais(tutor_id,nome,especie,raca,nascimento,sexo,observacoes) VALUES(?,?,?,?,?,?,?)");$s->execute($dados);}
@@ -18,7 +19,7 @@ $titulo=$id?'Editar animal':'Novo animal';include __DIR__.'/../includes/header.p
 <form method="post">
 <div class="field"><label>Tutor</label><select name="tutor_id" required><option value="">Selecione</option><?php foreach($tutores as $t):?><option value="<?=$t['id']?>" <?=$r['tutor_id']==$t['id']?'selected':''?>><?=htmlspecialchars($t['nome'])?></option><?php endforeach;?></select></div>
 <div class="field"><label>Nome *</label><input name="nome" value="<?=htmlspecialchars($r['nome'])?>" required></div>
-<div class="field"><label>Espécie</label><input name="especie" value="<?=htmlspecialchars($r['especie'])?>"></div>
+<div class="field"><label>Espécie *</label><input name="especie" value="<?=htmlspecialchars($r['especie'])?>" required></div>
 <div class="field"><label>Raça</label><input name="raca" value="<?=htmlspecialchars($r['raca'])?>"></div>
 <div class="field"><label>Data de nascimento</label><input type="date" name="nascimento" value="<?=$r['nascimento']?>"></div>
 <div class="field"><label>Sexo</label><select name="sexo"><option value="">Selecione</option><option <?=$r['sexo']==='Macho'?'selected':''?>>Macho</option><option <?=$r['sexo']==='Fêmea'?'selected':''?>>Fêmea</option></select></div>
