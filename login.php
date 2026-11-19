@@ -8,15 +8,14 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     $stmt=$pdo->prepare("SELECT * FROM usuarios WHERE usuario=?");
     $stmt->execute([$usuario]);
     $conta=$stmt->fetch();
- if (!$conta || $senha !== $conta['senha']) {
-    $erro='Usuário ou senha inválidos.';
-}
-   } else {
-    session_regenerate_id(true);
-    $_SESSION['usuario_id']=$conta['id'];
-    $_SESSION['usuario_nome']=$conta['nome'];
-    header('Location: index.php'); exit;
-}s
+    if (!$conta || $senha !== $conta['senha']) {
+        $erro='Usuário ou senha inválidos.';
+    } else {
+        session_regenerate_id(true);
+        $_SESSION['usuario_id']=$conta['id'];
+        $_SESSION['usuario_nome']=$conta['nome'];
+        header('Location: index.php'); exit;
+    }
 }
 $titulo='Entrar'; include __DIR__.'/includes/header.php';
 ?>
