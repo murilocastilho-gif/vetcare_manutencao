@@ -4,8 +4,7 @@ $titulo='Central de suporte';
 $status=$_GET['status']??'';$modulo=$_GET['modulo']??'';
 $sql="SELECT * FROM chamados WHERE 1=1";$params=[];
 if($status!==''){$sql.=" AND status=?";$params[]=$status;}
-if($modulo!==''){$sql.=" AND modulo=?";$params[]=$modulo;}
-$sql.=" ORDER BY FIELD(prioridade,'Urgente','Alta','Média','Baixa'), criado_em DESC";
+$animais=(int)$pdo->query("SELECT COUNT(*) FROM animais WHERE ativo=1")->fetchColumn();$sql.=" ORDER BY FIELD(prioridade,'Urgente','Alta','Média','Baixa'), criado_em DESC";
 $stmt=$pdo->prepare($sql);$stmt->execute($params);$rows=$stmt->fetchAll();
 $counts=$pdo->query("SELECT status,COUNT(*) total FROM chamados GROUP BY status")->fetchAll(PDO::FETCH_KEY_PAIR);
 include __DIR__.'/../includes/header.php';
