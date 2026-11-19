@@ -11,12 +11,12 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
  if (!$conta || $senha !== $conta['senha']) {
     $erro='Usuário ou senha inválidos.';
 }
-    } else {
-        // F02: não regenera o ID da sessão após autenticação
-        $_SESSION['usuario_id']=$conta['id'];
-        $_SESSION['usuario_nome']=$conta['nome'];
-        header('Location: index.php'); exit;
-    }
+   } else {
+    session_regenerate_id(true);
+    $_SESSION['usuario_id']=$conta['id'];
+    $_SESSION['usuario_nome']=$conta['nome'];
+    header('Location: index.php'); exit;
+}s
 }
 $titulo='Entrar'; include __DIR__.'/includes/header.php';
 ?>
